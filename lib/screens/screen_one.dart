@@ -7,30 +7,10 @@ class ScreenOne extends StatefulWidget {
   State<ScreenOne> createState() => _ScreenOneState();
 }
 
-class _ScreenOneState extends State<ScreenOne>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController;
-  final Tween<double> opacityTween = Tween<double>(begin: 0, end: 1);
-  late Animation<double> _animation;
-  @override
-  void initState() {
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    )..addListener(() {
-        setState(() {});
-        _animation = opacityTween.animate(
-            CurvedAnimation(parent: _animationController, curve: Curves.ease));
-      });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
+class _ScreenOneState extends State<ScreenOne> {
+  bool _isAnimated = false;
+  double _width = 100;
+  double _height = 100;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,19 +19,24 @@ class _ScreenOneState extends State<ScreenOne>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              width: 300,
-              height: 300,
-              color: Colors.amber.withOpacity(_animation.value),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              width: _width,
+              height: _height,
+              color: _isAnimated ? Colors.red : Colors.blue,
             ),
             SizedBox(height: 10),
             TextButton(
               onPressed: () {
-                if (_animationController.isCompleted) {
-                  _animationController.reverse();
+                if (_isAnimated) {
+                  _height = 300;
+                  _width = 300;
                 } else {
-                  _animationController.forward();
+                  _height = 100;
+                  _width = 100;
                 }
+                _isAnimated = !_isAnimated;
+                setState(() {});
               },
               child: Text("Animate"),
             ),
